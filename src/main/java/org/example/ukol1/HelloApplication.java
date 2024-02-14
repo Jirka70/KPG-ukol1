@@ -5,13 +5,15 @@ import javafx.animation.Animation;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Polygon;
 import javafx.stage.Stage;
 import java.util.ArrayList;
 import java.util.List;
 
 public class HelloApplication extends Application {
-    private static final double WIDTH = 1500;
+    private static final double WIDTH = 800;
     private static final double HEIGHT = 800;
     private static final double PERIOD = 2*Math.PI;
     private final Pane mainPane = new Pane();
@@ -22,18 +24,12 @@ public class HelloApplication extends Application {
         stage.setTitle("KPG - úkol č.1 A22B0106P");
         stage.show();
         double[] lissajousCurve = generateLissajousCurve(3,2);
-        //mainPane.getChildren().add(lissajousCurve);
         Circle animatingCircle = new Circle(lissajousCurve[0],lissajousCurve[1],5);
-        mainPane.getChildren().add(animatingCircle);
-        /*PathTransition pathTransition = new PathTransition();
-        pathTransition.setDuration(Duration.seconds(7));
-        pathTransition.setPath(lissajousCurve);
-        pathTransition.setNode(animatingCircle);
-        pathTransition.setCycleCount(PathTransition.INDEFINITE);
-        pathTransition.setAutoReverse(true);
+        Polygon lis = new Polygon(lissajousCurve);
+        lis.setStroke(Color.BLACK);
+        lis.setFill(null);
+        mainPane.getChildren().addAll(lis,animatingCircle);
 
-
-        pathTransition.play();*/
         CurveTransition curveTransition = new CurveTransition(lissajousCurve,animatingCircle);
         curveTransition.setCycleCount(Animation.INDEFINITE);
         curveTransition.play();
