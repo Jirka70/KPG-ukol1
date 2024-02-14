@@ -1,4 +1,4 @@
-module org.example.ukol1 {
+module org.example.ukol {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.graphics;
