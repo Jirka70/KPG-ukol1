@@ -5,17 +5,15 @@ import javafx.animation.Animation;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Polygon;
 import javafx.stage.Stage;
-import java.util.ArrayList;
-import java.util.List;
+import org.example.ukol1.curve.Curve;
+import org.example.ukol1.curve.LissajousCurve;
+import org.example.ukol1.shapes.TrailCircle;
+import org.example.ukol1.shapes.TrailShape;
 
 public class HelloApplication extends Application {
     private static final double WIDTH = 800;
     private static final double HEIGHT = 800;
-    private static final double PERIOD = 2*Math.PI;
     private final Pane mainPane = new Pane();
     @Override
     public void start(Stage stage) {
@@ -23,40 +21,16 @@ public class HelloApplication extends Application {
         stage.setScene(scene);
         stage.setTitle("KPG - úkol č.1 A22B0106P");
         stage.show();
-        double[] lissajousCurve = generateLissajousCurve(3,2);
-        Circle animatingCircle = new Circle(lissajousCurve[0],lissajousCurve[1],5);
-        Polygon lis = new Polygon(lissajousCurve);
-        lis.setStroke(Color.BLACK);
-        lis.setFill(null);
-        mainPane.getChildren().addAll(lis,animatingCircle);
 
-        CurveTransition curveTransition = new CurveTransition(lissajousCurve,animatingCircle);
+        Curve lissajous = new LissajousCurve(3,2,200,300,WIDTH/2,HEIGHT/2);
+        TrailShape translatingShape = new TrailCircle(lissajous.getStartX(), lissajous.getStartY(),5);
+
+        CurveTransition curveTransition = new CurveTransition(lissajous,translatingShape,mainPane);
         curveTransition.setCycleCount(Animation.INDEFINITE);
         curveTransition.play();
 
-
+        mainPane.getChildren().addAll(translatingShape.getShape(), translatingShape.getTrail());
     }
-
-    private double[] generateLissajousCurve(double x, double y) {
-        final int A = 200;
-        final int B = 300;
-        double step = 0.001;
-        List<Double> points = new ArrayList<>();
-        for (double t = 0; t < PERIOD; t+=step) {
-            double curveX = A * Math.cos(x*t) + WIDTH/2;
-            double curveY = B * Math.sin(y*t) + HEIGHT/2;
-
-            points.add(curveX);
-            points.add(curveY);
-        }
-        double[] polygonPoints = new double[points.size()];
-        for (int i = 0; i < points.size(); i++) {
-            polygonPoints[i] = points.get(i);
-        }
-
-        return polygonPoints;
-    }
-
 
     public static void main(String[] args) {
         launch();

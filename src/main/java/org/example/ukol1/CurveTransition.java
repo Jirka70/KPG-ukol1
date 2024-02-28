@@ -2,40 +2,57 @@ package org.example.ukol1;
 
 import javafx.animation.Interpolator;
 import javafx.animation.Transition;
-import javafx.scene.shape.Circle;
+import javafx.scene.layout.Pane;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Shape;
 import javafx.util.Duration;
+import org.example.ukol1.curve.Curve;
+import org.example.ukol1.shapes.TrailShape;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CurveTransition extends Transition {
     private final double startX;
     private final double startY;
-    private final double[] curve;
+    private final Curve curve;
+    private final TrailShape trailShape;
     private final Shape translatingShape;
+    private final List<Line> trail = new ArrayList<>();
+    private final Pane pane;
 
-    public CurveTransition(double[] curve, Circle translatingShape) {
+    public CurveTransition(Curve curve, TrailShape trailShape, Pane pane) {
         super();
         this.curve = curve;
-        this.translatingShape = translatingShape;
+        this.trailShape = trailShape;
+        this.pane = pane;
+
+        translatingShape = trailShape.getShape();
+
+        startX = curve.getStartX();
+        startY = curve.getStartY();
+
         setCycleDuration(Duration.seconds(10));
         setInterpolator(Interpolator.LINEAR);
-        startX = curve[0];
-        startY = curve[1];
     }
 
     @Override
     protected void interpolate(double frac) {
-        int numberOfPoints = curve.length;
-        int index = (int) (numberOfPoints * frac);
-        double x, y;
-        if (frac == 1) {
-            x = numberOfPoints - 2;
-            y = numberOfPoints - 1;
-        } else {
-            x = index % 2 == 0 ? curve[index] : curve[index - 1];
-            y = index % 2 == 0 ? curve[index + 1] : curve[index];
-        }
-
+        double x = curve.getX(frac);
+        double y = curve.getY(frac);
         translatingShape.setTranslateX(x - startX);
         translatingShape.setTranslateY(y - startY);
+        Line newLine;
+        if (trail.isEmpty()) {
+            newLine = new Line(x,y,x,y);
+        } else {
+            Line lastLine = trail.get(trail.size()-1);
+            newLine = new Line(x,y,lastLine.getStartX(),lastLine.getStartY());
+        }
+        trail.add(newLine);
+        pane.getChildren().add(newLine);
+        if (trail.size() > 255) {
+            pane.getChildren().remove(trail.remove(0));
+        }
     }
 }
